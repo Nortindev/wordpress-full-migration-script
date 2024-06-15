@@ -9,18 +9,20 @@ select_backup_file() {
     exit 1
   fi
 
-  echo "Select a backup file to use:"
-  for i in "${!backup_files[@]}"; do
-    printf "%s) %s\n" "$((i+1))" "${backup_files[$i]}"
+  while true; do
+    echo "Select a backup file to use:"
+    for i in "${!backup_files[@]}"; do
+      printf "%s) %s\n" "$((i+1))" "${backup_files[$i]}"
+    done
+
+    read -p "Enter the number of the backup file: " backup_number
+    if [[ "$backup_number" =~ ^[0-9]+$ ]] && [ "$backup_number" -ge 1 ] && [ "$backup_number" -le "${#backup_files[@]}" ]; then
+      selected_backup_file="${backup_files[$((backup_number-1))]}"
+      break
+    else
+      echo "Invalid selection. Please enter a number between 1 and ${#backup_files[@]}."
+    fi
   done
-
-  read -p "Enter the number of the backup file: " backup_number
-  if ! [[ "$backup_number" =~ ^[0-9]+$ ]] || [ "$backup_number" -lt 1 ] || [ "$backup_number" -gt "${#backup_files[@]}" ]; then
-    echo "Invalid selection. Exiting."
-    exit 1
-  fi
-
-  selected_backup_file="${backup_files[$((backup_number-1))]}"
 }
 
 # Function to list domains and allow the user to select one
@@ -31,19 +33,21 @@ select_domain() {
     exit 1
   fi
 
-  echo "Select a domain to migrate:"
-  for i in "${!domains[@]}"; do
-    domain_name=$(basename "${domains[$i]}")
-    printf "%s) %s\n" "$((i+1))" "$domain_name"
+  while true; do
+    echo "Select a domain to migrate:"
+    for i in "${!domains[@]}"; do
+      domain_name=$(basename "${domains[$i]}")
+      printf "%s) %s\n" "$((i+1))" "$domain_name"
+    done
+
+    read -p "Enter the number of the domain: " domain_number
+    if [[ "$domain_number" =~ ^[0-9]+$ ]] && [ "$domain_number" -ge 1 ] && [ "$domain_number" -le "${#domains[@]}" ]; then
+      selected_domain=$(basename "${domains[$((domain_number-1))]}")
+      break
+    else
+      echo "Invalid selection. Please enter a number between 1 and ${#domains[@]}."
+    fi
   done
-
-  read -p "Enter the number of the domain: " domain_number
-  if ! [[ "$domain_number" =~ ^[0-9]+$ ]] || [ "$domain_number" -lt 1 ] || [ "$domain_number" -gt "${#domains[@]}" ]; then
-    echo "Invalid selection. Exiting."
-    exit 1
-  fi
-
-  selected_domain=$(basename "${domains[$((domain_number-1))]}")
 }
 
 # Function to move files
@@ -93,7 +97,7 @@ migrate_site() {
   echo "What is the new database user?"
   read new_db_user
   echo "What is the new database password?"
-  read new_db_pass
+  read -s new_db_pass
   echo "Enter the name of the database backup file (e.g., backup.sql):"
   read db_backup_name
 
@@ -117,10 +121,18 @@ migrate_site() {
 
 # Script start
 while true; do
-  echo "Is this backup from Hostinger?"
-  echo "1. Yes"
-  echo "2. External backup"
-  read hostinger_option
+  while true; do
+    echo "Is this backup from Hostinger?"
+    echo "1. Yes"
+    echo "2. External backup"
+    read hostinger_option
+
+    if [[ "$hostinger_option" =~ ^[0-9]+$ ]] && ([ "$hostinger_option" -eq 1 ] || [ "$hostinger_option" -eq 2 ]); then
+      break
+    else
+      echo "Invalid selection. Please enter 1 or 2."
+    fi
+  done
 
   if [ "$hostinger_option" == "1" ]; then
     echo "Proceeding with the extraction."
@@ -128,8 +140,16 @@ while true; do
       select_backup_file "/home/$USER/domains"
 
       echo "Hostinger backup file selected: $selected_backup_file"
-      echo "Has the backup been extracted before? (yes/no)"
-      read extracted_before
+      while true; do
+        echo "Has the backup been extracted before? (yes/no)"
+        read extracted_before
+
+        if [[ "$extracted_before" == "yes" || "$extracted_before" == "no" ]]; then
+          break
+        else
+          echo "Invalid selection. Please enter yes or no."
+        fi
+      done
 
       if [ "$extracted_before" == "no" ]; then
         mkdir -p /home/$USER/domains/BACKUP
@@ -141,8 +161,17 @@ while true; do
 
     migrate_site
 
-    echo "Do you want to migrate another site? (yes/no)"
-    read migrate_again
+    while true; do
+      echo "Do you want to migrate another site? (yes/no)"
+      read migrate_again
+
+      if [[ "$migrate_again" == "yes" || "$migrate_again" == "no" ]]; then
+        break
+      else
+        echo "Invalid selection. Please enter yes or no."
+      fi
+    done
+
     if [ "$migrate_again" != "yes" ]; then
       break
     fi

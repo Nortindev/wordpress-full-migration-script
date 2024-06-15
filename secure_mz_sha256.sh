@@ -22,7 +22,13 @@ downloaded_hash=$(sha256sum $SCRIPT_FILE | awk '{print $1}')
 if [ "$expected_hash" != "$downloaded_hash" ]; then
   echo "Error: SHA256 hash mismatch. The script may have been tampered with."
   rm $SCRIPT_FILE $HASH_FILE
+  rm -- "$0"  # Remove the secure_mz_sha256.sh script itself
   exit 1
 fi
 
-# Execute t
+# Execute the script if the hashes match
+sh $SCRIPT_FILE
+
+# Cleanup: Remove the hash file and the secure_mz_sha256.sh script
+rm $HASH_FILE
+rm -- "$0"  # Remove the secure_mz_sha256.sh script itself

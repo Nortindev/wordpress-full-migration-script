@@ -27,3 +27,42 @@ This bash script facilitates the migration of WordPress sites hosted on Hostinge
    - Ensure the `public_html` directory of the sites to be migrated is empty to avoid conflicts during the migration process.
 
 ## Usage
+
+1. **Execute the Script via cURL**:
+   ```bash
+   curl -sL https://raw.githubusercontent.com/Nortindev/wordpress-full-migration-script/main/mz.sh | bash
+
+2. **Follow the Prompts**:
+
+   - Select whether the backup is from Hostinger or an external source.
+   - Select the backup file to use.
+   - Confirm if the backup has been extracted before.
+   - Select the domain to migrate.
+   - Provide the new database credentials.
+   - Provide the name of the database backup file.
+  
+## Example
+After running the script, you will be prompted to make selections and enter information as shown below:
+
+   - Is this backup from Hostinger?
+1. Yes
+2. External backup
+Enter your choice: 1
+Proceeding with the extraction.
+Select a backup file to use:
+1) yourdomain.20240615004657.tar.gz
+Enter the number of the backup file: 1
+Hostinger backup file selected: yourdomain.20240615004657.tar.gz
+Has the backup been extracted before? (yes/no): no
+Moving backup files to /home/youruser/domains/yourdomain/public_html
+What is the new database name? yourdatabase
+What is the new database user? yourdbuser
+What is the new database password? yourdbpassword
+Enter the name of the database backup file (e.g., backup.sql): yourdatabase.sql
+Database import successful.
+Updating wp-config.php with new database credentials.
+Migration completed successfully.
+Do you want to migrate another site? (yes/no): no
+
+## Conclusion
+This script simplifies the process of migrating WordPress sites, ensuring that even complex migrations can be completed efficiently and effectively. By following the prerequisites and usage instructions, you can migrate your WordPress site with minimal downtime and effort.

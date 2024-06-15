@@ -64,5 +64,12 @@ After running the script, you will be prompted to make selections and enter info
    - Migration completed successfully.
    - Do you want to migrate another site? (yes/no): no
 
+## Optional Usage - Download with SHA256 for extra security.
+
+1. **Execute the Script via cURL with SHA256 verification**:
+   ```bash
+   curl -O https://raw.githubusercontent.com/Nortindev/wordpress-full-migration-script/main/secure_mz_sha256.sh ; sh secure_mz_sha256.sh
+
+
 ## Conclusion
 This script simplifies the process of migrating WordPress sites, ensuring that even complex migrations can be completed efficiently and effectively. By following the prerequisites and usage instructions, you can migrate your WordPress site with minimal downtime and effort.

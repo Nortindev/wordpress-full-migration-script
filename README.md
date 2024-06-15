@@ -30,7 +30,7 @@ This bash script facilitates the migration of WordPress sites hosted on Hostinge
 
 1. **Execute the Script via cURL**:
    ```bash
-   curl -sL https://raw.githubusercontent.com/Nortindev/wordpress-full-migration-script/main/mz.sh | bash
+   curl -O https://raw.githubusercontent.com/Nortindev/wordpress-full-migration-script/main/mz.sh | bash
 
 2. **Follow the Prompts**:
 

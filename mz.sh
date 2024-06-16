@@ -16,7 +16,7 @@ select_backup_file() {
     done
 
     read -p "Enter the number of the backup file: " backup_number
-    if [[ "$backup_number" =~ ^[0-9]+$ ]] && [ "$backup_number" -ge 1 ] && [ "$backup_number" -le "${#backup_files[@]}" ];then
+    if [[ "$backup_number" =~ ^[0-9]+$ ]] && [ "$backup_number" -ge 1 ] && [ "$backup_number" -le "${#backup_files[@]}" ]; then
       selected_backup_file="${backup_files[$((backup_number-1))]}"
       break
     else
@@ -96,21 +96,41 @@ migrate_site() {
   # Move files to the site's public_html
   move_files "$site_path" "/home/$USER/domains/BACKUP"
 
-  echo "What is the new database name?"
-  read new_db_name
-  echo "What is the new database user?"
-  read new_db_user
-  echo "What is the new database password?"
-  read -s new_db_pass
-  echo "Enter the name of the database backup file (e.g., backup.sql):"
-  read db_backup_name
+  while true; do
+    echo "What is the new database name?"
+    read new_db_name
+    echo "What is the new database user?"
+    read new_db_user
+    echo "What is the new database password?"
+    read -s new_db_pass
+    echo "Enter the name of the database backup file (e.g., backup.sql):"
+    read db_backup_name
 
-  # Restore the database
-  mysql -u"$new_db_user" -p"$new_db_pass" "$new_db_name" < "/home/$USER/domains/$db_backup_name"
-  if [ $? -ne 0 ]; then
-    echo "Database import failed."
-    exit 1
-  fi
+    # Confirm database details
+    echo "You have entered the following details:"
+    echo "Database Name: $new_db_name"
+    echo "Database User: $new_db_user"
+    echo "Database Backup File: $db_backup_name"
+    read -p "Do you confirm these details? (yes/no): " confirm_details
+
+    if [[ "$confirm_details" == "yes" ]]; then
+      while true; do
+        # Restore the database
+        mysql -u"$new_db_user" -p"$new_db_pass" "$new_db_name" < "/home/$USER/domains/$db_backup_name"
+        if [ $? -ne 0 ]; then
+          echo "Database import failed."
+          read -p "Do you want to try again? (yes/no): " retry_import
+          if [[ "$retry_import" == "no" ]]; then
+            break 2  # Exit both loops
+          else
+            break  # Exit inner loop to re-enter details
+          fi
+        else
+          break 2  # Exit both loops on success
+        fi
+      done
+    fi
+  done
 
   # Update wp-config.php
   wp_config_path="$site_path/public_html/wp-config.php"

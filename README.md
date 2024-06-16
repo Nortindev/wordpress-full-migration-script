@@ -6,7 +6,7 @@ WordPress full migration script for backups created at Hostinger
 This bash script facilitates the migration of WordPress sites hosted on Hostinger. It automates the extraction of backups, movement of files, and configuration updates to complete complex migrations in under 5 minutes.
 
 ## Video Demonstration
-https://www.youtube.com/watch?v=lMg71xjNOTg
+https://www.youtube.com/watch?v=lMg71xjNOTg  ⏱ Video Duration: 4 minutes 57 seconds
 
 ## Features
 

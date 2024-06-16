@@ -16,7 +16,7 @@ select_backup_file() {
     done
 
     read -p "Enter the number of the backup file: " backup_number
-    if [[ "$backup_number" =~ ^[0-9]+$ ]] && [ "$backup_number" -ge 1 ] && [ "$backup_number" -le "${#backup_files[@]}" ]; then
+    if [[ "$backup_number" =~ ^[0-9]+$ ]] && [ "$backup_number" -ge 1 ] && [ "$backup_number" -le "${#backup_files[@]}" ];then
       selected_backup_file="${backup_files[$((backup_number-1))]}"
       break
     else
@@ -27,7 +27,7 @@ select_backup_file() {
 
 # Function to list domains and allow the user to select one
 select_domain() {
-  domains=($(ls -d /home/$USER/domains/*/))
+  domains=($(ls -d /home/$USER/domains/*/ | grep -v "BACKUP"))
   if [ ${#domains[@]} -eq 0 ]; then
     echo "No domains found."
     exit 1
@@ -35,17 +35,21 @@ select_domain() {
 
   while true; do
     echo "Select a domain to migrate:"
+    valid_domains=()
     for i in "${!domains[@]}"; do
       domain_name=$(basename "${domains[$i]}")
-      printf "%s) %s\n" "$((i+1))" "$domain_name"
+      if [ "$domain_name" != "BACKUP" ]; then
+        valid_domains+=("$domain_name")
+        printf "%s) %s\n" "$((i+1))" "$domain_name"
+      fi
     done
 
     read -p "Enter the number of the domain: " domain_number
-    if [[ "$domain_number" =~ ^[0-9]+$ ]] && [ "$domain_number" -ge 1 ] && [ "$domain_number" -le "${#domains[@]}" ]; then
-      selected_domain=$(basename "${domains[$((domain_number-1))]}")
+    if [[ "$domain_number" =~ ^[0-9]+$ ]] && [ "$domain_number" -ge 1 ] && [ "$domain_number" -le "${#valid_domains[@]}" ]; then
+      selected_domain="${valid_domains[$((domain_number-1))]}"
       break
     else
-      echo "Invalid selection. Please enter a number between 1 and ${#domains[@]}."
+      echo "Invalid selection. Please enter a number between 1 and ${#valid_domains[@]}."
     fi
   done
 }
